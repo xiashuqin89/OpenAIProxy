@@ -11,11 +11,12 @@ from langchain.prompts.chat import (
     SystemMessagePromptTemplate,
     HumanMessagePromptTemplate,
 )
-from langchain.chains import LLMChain
+from langchain.chains import LLMChain, MapReduceChain
 from langchain.schema import (
     HumanMessage,
     BaseOutputParser
 )
+from langchain.text_splitter import RecursiveCharacterTextSplitter, TextSplitter
 
 from exceptions import ActionFailed
 
@@ -63,7 +64,7 @@ class OpenAIProxy:
         return self.llm.predict_messages(messages)
 
 
-class TranslateAIChain:
+class TranslateAIStuffChain:
     SYSTEM_TEMPLATE = """
     You are a helpful assistant who translate korea to simplified chinese.
 A user will pass in a korea text, and you should translate it to simplified chinese, and nothing more.
@@ -87,3 +88,19 @@ A user will pass in a korea text, and you should translate it to simplified chin
 
     def run(self, text: Text):
         return self.chain.run(text)
+
+
+class TranslateAIMapReduceChain(TranslateAIStuffChain):
+    def __init__(self, **kwargs):
+        super(TranslateAIMapReduceChain, self).__init__()
+        self.chain = MapReduceChain.from_params(
+            llm=OpenAI(openai_api_key=OPENAI_API_KEY, **kwargs),
+            prompt=self.construct_prompt(),
+            text_splitter=self.construct_spliter()
+        )
+
+    def construct_spliter(self) -> TextSplitter:
+        return RecursiveCharacterTextSplitter(chunk_size=50, chunk_overlap=0)
+
+    def run(self, text: Text):
+        return self.chain.run(text).strip()

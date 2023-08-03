@@ -41,7 +41,7 @@ async def root():
 
 
 @app.post("/openai/predict/")
-async def translate_text(item: models.OpenAI):
+async def openai_predict(item: models.OpenAI):
     answer = api.OpenAIProxy(item.api_token, **(item.model_config or {})).predict(item.text)
     return {
         'code': 0,
@@ -49,6 +49,11 @@ async def translate_text(item: models.OpenAI):
         'message': '',
         'data': {'answer': answer}
     }
+
+
+@app.post("/chain/predict/")
+async def openai_predict(item: models.OpenAI):
+    pass
 
 
 if __name__ == '__main__':
