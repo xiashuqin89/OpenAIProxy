@@ -5,7 +5,7 @@ from fastapi import Request, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from fastapi.security.utils import get_authorization_scheme_param
 
-ACCESS_TOKEN = os.getenv('ACCESS_TOKEN', '123')
+ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
 
 
 class SelfOAuth2PasswordBearer(OAuth2PasswordBearer):
