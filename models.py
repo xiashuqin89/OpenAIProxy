@@ -9,5 +9,9 @@ class OpenAI(BaseModel):
     model_config: Union[Dict, None] = None
 
 
-class Chain(BaseModel):
+class MultiAI(BaseModel):
     text: str
+    prompt: str
+    chunk_size: Union[int, None] = None
+    chunk_overlap: Union[int, None] = None
+    delay: Union[float, None] = None

@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse
 import models
 import auth
 import api
+import multi
 from exceptions import ActionFailed
 
 
@@ -51,9 +52,20 @@ async def openai_predict(item: models.OpenAI):
     }
 
 
-@app.post("/chain/predict/")
-async def openai_predict(item: models.OpenAI):
-    pass
+@app.post("/openai/multi-predict/")
+async def openai_predict(item: models.MultiAI):
+    ai = multi.MultiAIChain(item.prompt,
+                            item.chunk_size or 200,
+                            item.chunk_overlap or 0,
+                            item.delay or 0.5)
+    answer = ai.run(item.text)
+    return {
+        'code': 0,
+        'result': True,
+        'message': '',
+        'data': {'answer': answer}
+    }
+
 
 
 if __name__ == '__main__':
